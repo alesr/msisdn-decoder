@@ -7,7 +7,7 @@ import (
 	"net/rpc"
 	"os"
 
-	"github.com/alesr/msisdn-decoder3000/number"
+	"github.com/alesr/msisdn-decoder3000/msisdn"
 )
 
 func main() {
@@ -24,11 +24,12 @@ func main() {
 		log.Fatal(err)
 	}
 
-	reply := new(msisdn.Reply)
+	reply := new(msisdn.Response)
 	if err = client.Call("Msisdn.Decode", string(line), &reply); err != nil {
 		log.Fatal(err)
 	}
 
-	log.Println(reply.CC)
+	fmt.Printf("CC: %s  |  NDC: %s  |  NMO: %s",
+		reply.CC, reply.NDC, reply.MNO)
 
 }
