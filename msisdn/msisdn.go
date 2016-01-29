@@ -1,10 +1,13 @@
 package msisdn
 
 import (
+	"errors"
 	"fmt"
 	"regexp"
 	"strings"
 )
+
+var ErrSanitizeError error = errors.New("MSISDN must have between 8 and 15 digits")
 
 type Msisdn struct {
 	input string
@@ -12,7 +15,7 @@ type Msisdn struct {
 
 func (n *Msisdn) Decode(s string, reply *Response) error {
 
-	if err := n.sanitize(&s); err != nil {
+	if err := n.sanitize(s); err != nil {
 		return err
 	}
 
@@ -20,11 +23,12 @@ func (n *Msisdn) Decode(s string, reply *Response) error {
 	return nil
 }
 
-func (n *Msisdn) sanitize(s *string) error {
-	*s = strings.Replace(*s, " ", "", -1)
-	*s = strings.Replace(*s, "\t", "", -1)
-	*s = strings.TrimPrefix(*s, "+")
-	*s = strings.TrimPrefix(*s, "00")
+func (n *Msisdn) sanitize(s string) error {
+	sPtr := &s
+	*sPtr = strings.Replace(*sPtr, " ", "", -1)
+	*sPtr = strings.Replace(*sPtr, "\t", "", -1)
+	*sPtr = strings.TrimPrefix(*sPtr, "+")
+	*sPtr = strings.TrimPrefix(*sPtr, "00")
 
 	// only digits between 8(so far) and 15
 	r, err := regexp.Compile("^[0-9]{8,15}$")
@@ -32,11 +36,11 @@ func (n *Msisdn) sanitize(s *string) error {
 		return err
 	}
 
-	if !r.MatchString(*s) {
-		return fmt.Errorf("MSISDN must have between 8 and 15 digits")
+	if !r.MatchString(*sPtr) {
+		return ErrSanitizeError
 	}
 
-	n.input = *s
+	n.input = *sPtr
 	return nil
 }
 
