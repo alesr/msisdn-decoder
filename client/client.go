@@ -29,7 +29,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("CC: %s  |  NDC: %s  |  NMO: %s",
-		reply.CC, reply.NDC, reply.MNO)
+	fmt.Printf(reply.String())
 
 }
