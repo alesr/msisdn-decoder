@@ -23,8 +23,6 @@ func main() {
 	}
 	defer list.Close()
 
-	n := new(msisdn.Msisdn)
-	rpc.Register(n)
+	rpc.Register(new(msisdn.Msisdn))
 	rpc.Accept(list)
-
 }

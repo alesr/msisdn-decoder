@@ -30,5 +30,4 @@ func main() {
 	}
 
 	fmt.Printf(reply.String())
-
 }
