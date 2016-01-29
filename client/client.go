@@ -6,6 +6,8 @@ import (
 	"log"
 	"net/rpc"
 	"os"
+
+	"github.com/alesr/msisdn-decoder3000/number"
 )
 
 func main() {
@@ -22,11 +24,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	var reply string
-	if err = client.Call("Number.Translate", string(line), &reply); err != nil {
+	reply := new(msisdn.Reply)
+	if err = client.Call("Msisdn.Decode", string(line), &reply); err != nil {
 		log.Fatal(err)
 	}
 
-	log.Println(reply)
+	log.Println(reply.CC)
 
 }
