@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-var ErrSanitizeError error = errors.New("MSISDN must have between 8 and 15 digits")
+var ErrSanitizeError error = errors.New("only of digits and optional prefixes (+, 00), 8-15 characters")
 
 type Msisdn struct {
 	input string
