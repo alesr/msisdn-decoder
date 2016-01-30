@@ -1,4 +1,4 @@
-package main
+package rpc
 
 import (
 	"fmt"
@@ -9,9 +9,9 @@ import (
 	"github.com/alesr/msisdn-decoder/msisdn"
 )
 
-func main() {
+func Client() {
 
-	client, err := rpc.Dial("tcp", "127.0.0.1:8080")
+	client, err := rpc.Dial("tcp", "127.0.0.1:80")
 	if err != nil {
 		log.Fatal(err)
 	}

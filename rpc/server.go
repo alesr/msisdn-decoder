@@ -1,4 +1,4 @@
-package main
+package rpc
 
 import (
 	"log"
@@ -8,9 +8,9 @@ import (
 	"github.com/alesr/msisdn-decoder/msisdn"
 )
 
-func main() {
+func Server() {
 
-	addr := "0.0.0.0:8080"
+	addr := "0.0.0.0:80"
 
 	rAddr, err := net.ResolveTCPAddr("tcp", addr)
 	if err != nil {
@@ -23,7 +23,7 @@ func main() {
 	}
 	defer list.Close()
 
-	log.Println("RPC server up and running (ctrl-c to exit)")
+	log.Println("RPC server up and running... (ctrl-c to exit)")
 
 	rpc.Register(new(msisdn.Msisdn))
 	rpc.Accept(list)
