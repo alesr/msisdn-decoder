@@ -9,7 +9,7 @@ import (
 	"github.com/alesr/msisdn-decoder/msisdn"
 )
 
-func Server() {
+func Server(n *msisdn.Msisdn) {
 
 	addr := "0.0.0.0:80"
 
@@ -26,6 +26,6 @@ func Server() {
 
 	fmt.Print("\n\n*** RPC server up and running... (ctrl-c to exit) ***\n")
 
-	rpc.Register(new(msisdn.Msisdn))
+	rpc.Register(n)
 	rpc.Accept(l)
 }
