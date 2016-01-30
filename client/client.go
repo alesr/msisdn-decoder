@@ -6,7 +6,7 @@ import (
 	"net/rpc"
 	"os"
 
-	"github.com/alesr/msisdn-decoder3000/msisdn"
+	"github.com/alesr/msisdn-decoder/msisdn"
 )
 
 func main() {
