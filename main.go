@@ -9,7 +9,7 @@ import (
 
 func main() {
 	go rpc.Server()
-	time.Sleep(2 * time.Second)
+	time.Sleep(1 * time.Second)
 	fmt.Printf("\n*** lauching client... ***\n\n")
 	time.Sleep(1 * time.Second)
 	rpc.Client()
