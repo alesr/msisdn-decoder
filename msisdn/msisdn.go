@@ -11,6 +11,7 @@ var ErrSanitizeError error = errors.New("only of digits and optional prefixes (+
 
 type Msisdn struct {
 	input string
+	data  []Data
 }
 
 func (n *Msisdn) Decode(s string, reply *Response) error {
