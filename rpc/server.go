@@ -1,6 +1,7 @@
 package rpc
 
 import (
+	"fmt"
 	"log"
 	"net"
 	"net/rpc"
@@ -23,7 +24,7 @@ func Server() {
 	}
 	defer list.Close()
 
-	log.Println("RPC server up and running... (ctrl-c to exit)")
+	fmt.Print("\n\n*** RPC server up and running... (ctrl-c to exit) ***\n")
 
 	rpc.Register(new(msisdn.Msisdn))
 	rpc.Accept(list)

@@ -28,10 +28,10 @@ func getRequest(c *rpc.Client) {
 	reply := new(msisdn.Response)
 	if err = c.Call("Msisdn.Decode", input, &reply); err != nil {
 		if err == msisdn.ErrSanitizeError {
-			log.Println(err)
+			fmt.Println(err)
 			getRequest(c)
 		}
-		log.Println(err)
+		fmt.Println(err)
 		getRequest(c)
 	}
 
@@ -51,7 +51,7 @@ func askInput(c *rpc.Client) (string, error) {
 
 	switch input {
 	case "exit":
-		fmt.Println("exiting client")
+		fmt.Println("\n*** exiting client ***")
 		os.Exit(0)
 	case "help":
 		fmt.Println("enter a MSISDN composed only of digits and optional prefixes (+, 00), 8-15 characters")
