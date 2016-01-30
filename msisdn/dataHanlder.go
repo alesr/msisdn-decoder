@@ -7,6 +7,7 @@ import (
 	"os"
 )
 
+// Data, this dear buddy hold the data we get from JSON
 type Data struct {
 	Name     string `json:"name"`
 	DialCode string `json:"dial_code"`
@@ -35,7 +36,6 @@ func LoadJSON(filepath string, n *Msisdn) {
 	if err := json.Unmarshal(content, &n.data); err != nil {
 		log.Fatal(err)
 	}
-
 }
 
 // Check if file exist in directory.
