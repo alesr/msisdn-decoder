@@ -56,7 +56,10 @@ func (n *Msisdn) Decode(s string, reply *Response) error {
 	}
 
 	// Due to our restriction on the data. We will only consider NDC, MNO and SN Slovenes.
-	fmt.Println(cc[0].Name == "Slovenia")
+	if cc[0].Name == "Slovenia" {
+		n.nationalDestCode(cc)
+		// n.mobileNetworkOp()
+	}
 
 	reply.CC = cc
 
@@ -114,6 +117,13 @@ func (n *Msisdn) countryCode() ([]country, error) {
 	return countries, nil
 }
 
+func (n *Msisdn) nationalDestCode(cc []country) {
+	fmt.Println(cc[0].DialCode)
+	// remove dispensable digit zero before area code
+	n.input = strings.TrimPrefix(n.input, "0")
+}
+
+// LoadData guess what. Loads data from JSON files into msisdn structs
 func LoadData(n *Msisdn) {
 
 	// load and unmarharl json country code in a new goroutine
