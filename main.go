@@ -13,16 +13,19 @@ import (
 func main() {
 	n := new(msisdn.Msisdn)
 
-	b, err := msisdn.LoadFile("data/country-code.json")
-	if err != nil {
-		log.Fatal(err)
-	}
+	// load and unmarharl json country code in a new goroutine
+	go func(n *msisdn.Msisdn) {
+		b, err := msisdn.LoadFile("data/country-code.json")
+		if err != nil {
+			log.Fatal(err)
+		}
 
-	if err := json.Unmarshal(b, &n.CountryData); err != nil {
-		log.Fatal(err)
-	}
+		if err := json.Unmarshal(b, &n.CountryData); err != nil {
+			log.Fatal(err)
+		}
+	}(n)
 
-	// hey server! follow that taxi! kidding, just start
+	// starts server
 	go rpc.Server(n)
 
 	// play: drum-roll-sound-effect.midi
@@ -30,6 +33,6 @@ func main() {
 	fmt.Printf("\n*** lauching client... ***\n\n")
 	time.Sleep(1 * time.Second)
 
-	// starts the client
+	// starts client
 	rpc.Client()
 }
