@@ -14,7 +14,7 @@ const countryCodeFilepath string = "data/country-code.json"
 func main() {
 	n := new(msisdn.Msisdn)
 
-	// go load that data for me. i'm going to use it soon
+	// go load that data for me. gonna use it soon
 	go msisdn.LoadJSON(countryCodeFilepath, n)
 
 	// hey server! follow that taxi! kidding, just start
