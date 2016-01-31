@@ -25,8 +25,8 @@ type Msisdn struct {
 // Data, this dear buddy hold the data we get from JSON
 type country struct {
 	Name     string `json:"name"`
-	DialCode string `json:"dial_code"`
 	Code     string `json:"code"`
+	DialCode string `json:"dial_code"`
 }
 
 // Decode is our guy. Our contact with the client.
