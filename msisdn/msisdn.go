@@ -45,6 +45,9 @@ type ndc struct {
 // and put the answer on paper.
 func (n *Msisdn) Decode(s string, reply *Response) error {
 
+	fmt.Println(n.CountryData)
+	fmt.Println(n.NdcData)
+
 	// let's take the user input to quarantine
 	if err := n.sanitize(s); err != nil {
 		return err
@@ -55,16 +58,8 @@ func (n *Msisdn) Decode(s string, reply *Response) error {
 		return (err)
 	}
 
-	b, err := LoadFile("data/slovenia-ndc.json")
-	if err != nil {
-		log.Fatal(err)
-	}
+	// Due to our restriction on the data. We will only consider NDC, MNO and SN Slovenes.
 
-	if err := json.Unmarshal(b, &n.NdcData); err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println(n.NdcData)
 	reply.CC = cc
 
 	return nil
@@ -121,8 +116,31 @@ func (n *Msisdn) countryCode() ([]country, error) {
 	return countries, nil
 }
 
-// LoadFile checks if file exists, open and load it
-func LoadFile(filepath string) ([]byte, error) {
+func LoadData(n *Msisdn) {
+
+	// load and unmarharl json country code in a new goroutine
+	countryJSON, err := handleFile("data/country-code.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err := json.Unmarshal(countryJSON, &n.CountryData); err != nil {
+		log.Fatal(err)
+	}
+
+	ndcJSON, err := handleFile("data/slovenia-ndc.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err := json.Unmarshal(ndcJSON, &n.NdcData); err != nil {
+		log.Fatal(err)
+	}
+
+}
+
+// handleFile checks if file exists, open and load it
+func handleFile(filepath string) ([]byte, error) {
 
 	// checks if the file is still there =]
 	_, err := checkFile(filepath)
