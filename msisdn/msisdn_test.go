@@ -1,6 +1,9 @@
 package msisdn
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 // CASES
 var sanitizeCases = []struct {
@@ -32,6 +35,43 @@ var countryCodeCases = []struct {
 	{"35196234887", []string{"Portugal"}, []string{"PT"}, []string{"351"}, nil},
 	{"09196234887", []string{}, []string{}, []string{}, ErrCodeCountryError},
 	{"55196234887", []string{"Brazil"}, []string{"BR"}, []string{"55"}, nil},
+	{"3862121212", []string{"Slovenia"}, []string{"SI"}, []string{"386"}, nil},
+	{"44655446212",
+		[]string{
+			"Guernsey",
+			"Isle of Man",
+			"Jersey",
+			"United Kingdom",
+		},
+		[]string{
+			"GG",
+			"IM",
+			"JE",
+			"GB",
+		},
+		[]string{
+			"44",
+			"44",
+			"44",
+			"44",
+		},
+		nil,
+	},
+	{"11554545455",
+		[]string{
+			"Canada",
+			"United States",
+		},
+		[]string{
+			"CA",
+			"US",
+		},
+		[]string{
+			"1",
+			"1",
+		},
+		nil,
+	},
 }
 
 // TESTS
@@ -48,6 +88,8 @@ func TestSanitize(t *testing.T) {
 
 func TestCountryCode(t *testing.T) {
 
+	errorMsg := fmt.Sprint("For input: %s, expected %s. Got %s")
+
 	n := new(Msisdn)
 	LoadJSON("../data/country-code.json", n)
 
@@ -61,13 +103,13 @@ func TestCountryCode(t *testing.T) {
 
 		for i, obs := range observed {
 			if obs.Name != test.name[i] {
-				t.Errorf("For input: %s, expected %s. Got %s", n.input, test.name[i], obs.Name)
+				t.Errorf(errorMsg, n.input, test.name[i], obs.Name)
 			}
 			if obs.Code != test.code[i] {
-				t.Errorf("For input: %s, expected %s. Got %s", n.input, test.code[i], obs.Code)
+				t.Errorf(errorMsg, n.input, test.code[i], obs.Code)
 			}
 			if obs.DialCode != test.dialCode[i] {
-				t.Errorf("For input: %s, expected %s. Got %s", n.input, test.dialCode[i], obs.DialCode)
+				t.Errorf(errorMsg, n.input, test.dialCode[i], obs.DialCode)
 			}
 		}
 	}
