@@ -90,6 +90,5 @@ func (n *Msisdn) countryCode() ([]countryData, error) {
 	if len(cc) == 0 {
 		return nil, ErrCodeCountryError
 	}
-
 	return cc, nil
 }
