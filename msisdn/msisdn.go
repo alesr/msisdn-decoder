@@ -19,10 +19,10 @@ var (
 // all the methods to convert one thing into other
 type Msisdn struct {
 	input       string
-	countryData []country
+	CountryData []country
 }
 
-// Data, this dear buddy hold the data we get from JSON
+// this dear buddy hold the country data we get from JSON
 type country struct {
 	Name     string `json:"name"`
 	Code     string `json:"code"`
@@ -86,7 +86,7 @@ func (n *Msisdn) countryCode() ([]country, error) {
 	// for each country in the whole world
 	// if dial code is equal to the slice with same length
 	// of the input data. then, we have a fellow cc.
-	for _, c := range n.countryData {
+	for _, c := range n.CountryData {
 		if c.DialCode == n.input[:len(c.DialCode)] {
 			match := country{c.Name, c.Code, c.DialCode}
 			countries = append(countries, match)

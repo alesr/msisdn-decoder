@@ -1,21 +1,26 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/alesr/msisdn-decoder/msisdn"
 	"github.com/alesr/msisdn-decoder/rpc"
 )
 
-// the pot under the rainbow for code country and other data
-const countryCodeFilepath string = "data/country-code.json"
-
 func main() {
 	n := new(msisdn.Msisdn)
 
-	// go load that data for me. i'm going to use it soon
-	go msisdn.LoadJSON(countryCodeFilepath, n)
+	b, err := msisdn.LoadFile("data/country-code.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err := json.Unmarshal(b, &n.CountryData); err != nil {
+		log.Fatal(err)
+	}
 
 	// hey server! follow that taxi! kidding, just start
 	go rpc.Server(n)
