@@ -4,13 +4,28 @@ import "fmt"
 
 // Response holds our data to be sent to client.
 type Response struct {
-	CC       map[string][]string // worth to say that some countries share the same CC (eg.: USA and Canada)
+	CC       []countryData // worth to say that some countries share the same CC (eg.: USA and Canada)
 	NDC, MNO string
 }
 
+// this struct holds the information related to the country
+// fields must be exportables to server build the response
+type countryData struct {
+	Name, Code, DialCode string
+}
+
+// just formats the answer in a readable way
 // Implements Stringer interface o/
 func (r *Response) String() string {
 
-	return fmt.Sprintf("\nCC: %s  |  NDC: %s  |  MNO: %s\n",
-		r.CC, r.NDC, r.MNO)
+	// we can have multiples results for the same dial code
+	// in such case we add this info to countryInfo
+	countryInfo := []string{}
+	for _, cc := range r.CC {
+		data := fmt.Sprintf("\n    name: %s\n    code: %s\n    dial code: %s\n", cc.Name, cc.Code, cc.DialCode)
+		countryInfo = append(countryInfo, data)
+	}
+
+	return fmt.Sprintf("\ncountry info: \n%s\n\nNDC: %s\nMNO: %s\n",
+		countryInfo, r.NDC, r.MNO)
 }

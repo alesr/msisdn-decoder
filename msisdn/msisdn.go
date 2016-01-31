@@ -71,16 +71,18 @@ func (n *Msisdn) sanitize(s string) error {
 	return nil
 }
 
-func (n *Msisdn) countryCode() (map[string][]string, error) {
-	cc := map[string][]string{}
+func (n *Msisdn) countryCode() ([]countryData, error) {
+
+	// hold all matchs for that msisdn
+	cc := []countryData{}
 
 	// for each country in the whole world
 	// if dial code is equal to the slice with same length
 	// of the input data. then, we have a fellow cc.
 	for _, country := range n.data {
 		if country.DialCode == n.input[:len(country.DialCode)] {
-			//cc = append(cc, country.Code)
-			cc[country.Code] = append(cc[country.Code], country.DialCode, country.Name)
+			cd := countryData{country.Name, country.Code, country.DialCode}
+			cc = append(cc, cd)
 		}
 	}
 
