@@ -25,11 +25,13 @@ var sanitizeCases = []struct {
 }
 
 var countryCodeCases = []struct {
-	input string
-	//expectedInfo []countryData
-	expectedError error
+	input                string
+	name, code, dialCode []string
+	expectedError        error
 }{
-	{"35196234887", nil},
+	{"35196234887", []string{"Portugal"}, []string{"PT"}, []string{"351"}, nil},
+	{"09196234887", []string{}, []string{}, []string{}, ErrCodeCountryError},
+	{"55196234887", []string{"Brazil"}, []string{"BR"}, []string{"55"}, nil},
 }
 
 // TESTS
@@ -45,13 +47,28 @@ func TestSanitize(t *testing.T) {
 }
 
 func TestCountryCode(t *testing.T) {
+
 	n := new(Msisdn)
 	LoadJSON("../data/country-code.json", n)
+
 	for _, test := range countryCodeCases {
 		n.input = test.input
-		_, err := n.countryCode()
+		observed, err := n.countryCode()
+
 		if err != nil && err != test.expectedError {
 			t.Errorf("should get nil here")
+		}
+
+		for i, obs := range observed {
+			if obs.Name != test.name[i] {
+				t.Errorf("For input: %s, expected %s. Got %s", n.input, test.name[i], obs.Name)
+			}
+			if obs.Code != test.code[i] {
+				t.Errorf("For input: %s, expected %s. Got %s", n.input, test.code[i], obs.Code)
+			}
+			if obs.DialCode != test.dialCode[i] {
+				t.Errorf("For input: %s, expected %s. Got %s", n.input, test.dialCode[i], obs.DialCode)
+			}
 		}
 	}
 }
