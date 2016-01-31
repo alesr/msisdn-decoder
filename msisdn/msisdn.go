@@ -45,9 +45,6 @@ type ndc struct {
 // and put the answer on paper.
 func (n *Msisdn) Decode(s string, reply *Response) error {
 
-	fmt.Println(n.CountryData)
-	fmt.Println(n.NdcData)
-
 	// let's take the user input to quarantine
 	if err := n.sanitize(s); err != nil {
 		return err
@@ -59,6 +56,7 @@ func (n *Msisdn) Decode(s string, reply *Response) error {
 	}
 
 	// Due to our restriction on the data. We will only consider NDC, MNO and SN Slovenes.
+	fmt.Println(cc[0].Name == "Slovenia")
 
 	reply.CC = cc
 

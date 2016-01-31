@@ -82,7 +82,7 @@ func askInput(c *rpc.Client) (string, error) {
 	// too tired to explain
 	switch input {
 	case "exit":
-		fmt.Println("\n*** exiting client ***")
+		fmt.Println("\n*** leaving application ***")
 		os.Exit(0)
 	case "help":
 		fmt.Println("enter a MSISDN composed only of digits and optional prefixes (+, 00), 8-15 characters")
