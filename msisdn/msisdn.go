@@ -2,13 +2,18 @@ package msisdn
 
 import (
 	"errors"
+	"fmt"
+	"log"
 	"regexp"
 	"strings"
 )
 
-// really good practice to list all package erros here
+// really good practice to list all package errors here
 // ErrSanitizeError - when user type something nonsense that's what we say
-var ErrSanitizeError = errors.New("only of digits and optional prefixes (+, 00), 8-15 characters")
+var (
+	ErrSanitizeError    = errors.New("only of digits and optional prefixes (+, 00), 8-15 characters")
+	ErrCodeCountryError = errors.New("sorry, didn't find any code country for this msisdn")
+)
 
 // Msisdn is kinda a Oracle that knows everything
 // it knows about the questions the user do
@@ -19,17 +24,24 @@ type Msisdn struct {
 	data  []Data
 }
 
-// Decode is our guy. Our contact with the client side.
+// Decode is our guy. Our contact with the client.
 // he's responsible to get the question, call some tough guys to work on it
-// and send put the answer on the paper.
+// and put the answer on paper.
 func (n *Msisdn) Decode(s string, reply *Response) error {
 
 	// let's take the user input to quarantine
 	if err := n.sanitize(s); err != nil {
+		fmt.Println("no decode")
 		return err
 	}
 
-	*reply = Response{"cc", "ndc", "mno"}
+	cc, err := n.countryCode()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	reply.CC = cc
+
 	return nil
 }
 
@@ -54,10 +66,31 @@ func (n *Msisdn) sanitize(s string) error {
 	// after all the cleaning and preparation we can say.
 	// that's a valid input
 	if !r.MatchString(*sPtr) {
+		fmt.Println("no match")
 		return ErrSanitizeError
 	}
 
 	// we accept you, one of us
 	n.input = *sPtr
 	return nil
+}
+
+func (n *Msisdn) countryCode() ([]string, error) {
+	cc := []string{}
+
+	// for each country in the whole world
+	// if dial code is equal to the slice with same length
+	// of the input data. then, we have a fellow cc.
+	for _, country := range n.data {
+		if country.DialCode == n.input[:len(country.DialCode)] {
+			cc = append(cc, country.Code)
+		}
+	}
+
+	// if empty slice, there's no match for this msisdn
+	if len(cc) == 0 {
+		return nil, ErrCodeCountryError
+	}
+
+	return cc, nil
 }
