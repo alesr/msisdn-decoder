@@ -4,7 +4,7 @@ import "fmt"
 
 // Response holds our data to be sent to client.
 type Response struct {
-	CC       []string // worth to say that some countries share the same CC (eg.: USA and Canada)
+	CC       map[string][]string // worth to say that some countries share the same CC (eg.: USA and Canada)
 	NDC, MNO string
 }
 
