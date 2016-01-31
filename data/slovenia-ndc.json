@@ -1,8 +1,13 @@
-[
-  { "1" : [{"Ljubljana"}] },
-  { "2" : [{"Maribor"}, {"Ravne na Koroskem"}, {"Murska Sobota"}] },
-  { "3" : [{"Celje"}, {"Trbovlje"}] },
-  { "4" : [{"Kranj"}] },
-  { "5" : [{"Nova Gorica"}, {"Koper"}, {"Postojna"}] },
-  { "7" : [{"Novo mesto"}, {"Krsko"}] },
-]
+[{
+	"1": ["Ljubljana"]
+}, {
+	"2": ["Maribor", "Ravne na Koroskem", "Murska Sobota"]
+}, {
+	"3": ["Celje", "Trbovlje"]
+}, {
+	"4": ["Kranj"]
+}, {
+	"5": ["Nova Gorica", "Koper", "Postojna"]
+}, {
+	"7": ["Novo mesto", "Krsko"]
+}]

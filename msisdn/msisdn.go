@@ -1,7 +1,9 @@
 package msisdn
 
 import (
+	"encoding/json"
 	"errors"
+	"log"
 	"regexp"
 	"strings"
 )
@@ -29,6 +31,11 @@ type country struct {
 	DialCode string `json:"dial_code"`
 }
 
+// type ndc struct {
+// 	Code       string   `json:"code"`
+// 	Localities []string `json:"localities"`
+// }
+
 // Decode is our guy. Our contact with the client.
 // he's responsible to get the question, call some tough guys to work on it
 // and put the answer on paper.
@@ -42,6 +49,16 @@ func (n *Msisdn) Decode(s string, reply *Response) error {
 	cc, err := n.countryCode()
 	if err != nil {
 		return (err)
+	}
+
+	b, err := LoadFile("data/slovenia-ndc.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var dat map[string]interface{}
+	if err := json.Unmarshal(b, &dat); err != nil {
+		log.Fatal(err)
 	}
 
 	reply.CC = cc
