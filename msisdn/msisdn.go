@@ -16,6 +16,7 @@ import (
 var (
 	ErrSanitizeError    = errors.New("only of digits and optional prefixes (+, 00), 8-15 characters")
 	ErrCodeCountryError = errors.New("sorry, didn't find any code country for this msisdn")
+	ErrNotSInumberError = errors.New("the number provided is not a valid slovenian msisdn")
 )
 
 // Msisdn is kinda a Oracle that knows everything
@@ -52,12 +53,18 @@ func (n *Msisdn) Decode(s string, reply *Response) error {
 
 	cc, err := n.countryCode()
 	if err != nil {
-		return (err)
+		return err
 	}
 
-	// Due to our restriction on the data. We will only consider NDC, MNO and SN Slovenes.
+	// Due to our restriction on the data. We will only consider NDC, MNO and SN for Slovenia.
 	if cc[0].Name == "Slovenia" {
-		n.nationalDestCode(cc)
+
+		b, err := isValidSInumber(&n.input, cc[0].DialCode)
+		if err != nil {
+			return err
+		}
+
+		// n.nationalDestCode()
 		// n.mobileNetworkOp()
 	}
 
@@ -117,10 +124,28 @@ func (n *Msisdn) countryCode() ([]country, error) {
 	return countries, nil
 }
 
-func (n *Msisdn) nationalDestCode(cc []country) {
-	fmt.Println(cc[0].DialCode)
+func (n *Msisdn) nationalDestCode() {
+
+}
+
+// Before start look for a NDC, MNO and SN.
+// Let's check if the input is a valid Slovenian number
+// or just some weird number starting with 386.
+// For that, we need to get rid of the CC and the potential zero following it.
+// After that, we see how many digits we have are left.
+// We need to count eight digits (NDC + (MNO + SN)) - initial 0.
+// Thanks Wikipedia. I hope you're right.
+func isValidSInumber(input *string, cc string) (bool, error) {
+	*input = strings.TrimPrefix(*input, cc)
+
 	// remove dispensable digit zero before area code
-	n.input = strings.TrimPrefix(n.input, "0")
+	*input = strings.TrimPrefix(*input, "0")
+
+	if len(*input) != 8 {
+		return false, ErrNotSInumberError
+	}
+	fmt.Print(*input)
+	return true, nil
 }
 
 // LoadData guess what. Loads data from JSON files into msisdn structs
