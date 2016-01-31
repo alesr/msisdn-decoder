@@ -3,7 +3,10 @@ package msisdn
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
+	"io/ioutil"
 	"log"
+	"os"
 	"regexp"
 	"strings"
 )
@@ -22,6 +25,7 @@ var (
 type Msisdn struct {
 	input       string
 	CountryData []country
+	NdcData     []ndc
 }
 
 // this dear buddy hold the country data we get from JSON
@@ -31,10 +35,10 @@ type country struct {
 	DialCode string `json:"dial_code"`
 }
 
-// type ndc struct {
-// 	Code       string   `json:"code"`
-// 	Localities []string `json:"localities"`
-// }
+type ndc struct {
+	Code     string   `json:"code"`
+	Locality []string `json:"locality"`
+}
 
 // Decode is our guy. Our contact with the client.
 // he's responsible to get the question, call some tough guys to work on it
@@ -56,11 +60,11 @@ func (n *Msisdn) Decode(s string, reply *Response) error {
 		log.Fatal(err)
 	}
 
-	var dat map[string]interface{}
-	if err := json.Unmarshal(b, &dat); err != nil {
+	if err := json.Unmarshal(b, &n.NdcData); err != nil {
 		log.Fatal(err)
 	}
 
+	fmt.Println(n.NdcData)
 	reply.CC = cc
 
 	return nil
@@ -115,4 +119,36 @@ func (n *Msisdn) countryCode() ([]country, error) {
 		return nil, ErrCodeCountryError
 	}
 	return countries, nil
+}
+
+// LoadFile checks if file exists, open and load it
+func LoadFile(filepath string) ([]byte, error) {
+
+	// checks if the file is still there =]
+	_, err := checkFile(filepath)
+	if err != nil {
+		return nil, err
+	}
+
+	// well, we open the file
+	file, err := os.Open(filepath)
+	if err != nil {
+		return nil, err
+	}
+
+	// and we load the whole []byte
+	content, err := ioutil.ReadAll(file)
+	if err != nil {
+		return nil, err
+	}
+
+	return content, err
+}
+
+// Check if file exist in directory.
+func checkFile(filepath string) (bool, error) {
+	if _, err := os.Stat(filepath); os.IsNotExist(err) {
+		return false, err
+	}
+	return true, nil
 }
