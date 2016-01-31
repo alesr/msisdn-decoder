@@ -10,7 +10,7 @@ import (
 )
 
 // Server tpc for our buddies
-func Server(n *msisdn.Msisdn) {
+func Server() {
 
 	// here's our address
 	addr := "0.0.0.0:80"
@@ -21,7 +21,6 @@ func Server(n *msisdn.Msisdn) {
 		log.Fatal(err)
 	}
 
-	// just listen
 	l, err := net.ListenTCP("tcp", rAddr)
 	if err != nil {
 		log.Fatal(err)
@@ -31,8 +30,8 @@ func Server(n *msisdn.Msisdn) {
 
 	fmt.Print("\n\n*** RPC server up and running... (ctrl-c to exit) ***\n")
 
-	// make our buddy visible to the client
-	rpc.Register(n)
+	// make our buddy visible
+	rpc.Register(new(msisdn.Msisdn))
 
 	// do you accept everything you listen?
 	rpc.Accept(l)
