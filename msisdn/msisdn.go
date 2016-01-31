@@ -80,7 +80,7 @@ func (n *Msisdn) countryCode() (map[string][]string, error) {
 	for _, country := range n.data {
 		if country.DialCode == n.input[:len(country.DialCode)] {
 			//cc = append(cc, country.Code)
-			cc[country.Code] = append(cc[country.Code], country.DialCode)
+			cc[country.Code] = append(cc[country.Code], country.DialCode, country.Name)
 		}
 	}
 

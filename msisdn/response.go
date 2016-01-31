@@ -10,6 +10,7 @@ type Response struct {
 
 // Implements Stringer interface o/
 func (r *Response) String() string {
+
 	return fmt.Sprintf("\nCC: %s  |  NDC: %s  |  MNO: %s\n",
 		r.CC, r.NDC, r.MNO)
 }
