@@ -38,17 +38,23 @@ func getRequest(c *rpc.Client) {
 	// so you can take it to Mrs. Msisdn.Decode give me some good news
 	if err = c.Call("Msisdn.Decode", input, &reply); err != nil {
 
-		// if the reply is an error saying that we ask the wrong question print it out.
+		// if the reply is an error saying that the input msisdn didn't
+		// match with our rules. or that we didn't find any correspondent
+		// result for that number. let's just print it out as a message and
+		// allow the program to continue.
+		// otherwise, it's an error coming from std library. in this case, exit.
+		//
 		// NOTE:
 		// Here, the err is returned by decoder method VIA Server.
 		// Because of that, the error is of type rpc.ServerError (or something like that)
 		// Said that, we need to compare the VALUE of this error to the string
 		// representation of our error. I S2 Go Interfaces!
-		if err.Error() == msisdn.ErrSanitizeError.Error() {
+		switch err.Error() {
+		case msisdn.ErrSanitizeError.Error():
 			fmt.Println(err)
-		} else {
-
-			// gee! not good!
+		case msisdn.ErrCodeCountryError.Error():
+			fmt.Println(err)
+		default:
 			log.Fatal(err)
 		}
 

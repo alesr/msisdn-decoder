@@ -2,8 +2,6 @@ package msisdn
 
 import (
 	"errors"
-	"fmt"
-	"log"
 	"regexp"
 	"strings"
 )
@@ -31,13 +29,12 @@ func (n *Msisdn) Decode(s string, reply *Response) error {
 
 	// let's take the user input to quarantine
 	if err := n.sanitize(s); err != nil {
-		fmt.Println("no decode")
 		return err
 	}
 
 	cc, err := n.countryCode()
 	if err != nil {
-		log.Fatal(err)
+		return (err)
 	}
 
 	reply.CC = cc
@@ -66,7 +63,6 @@ func (n *Msisdn) sanitize(s string) error {
 	// after all the cleaning and preparation we can say.
 	// that's a valid input
 	if !r.MatchString(*sPtr) {
-		fmt.Println("no match")
 		return ErrSanitizeError
 	}
 
