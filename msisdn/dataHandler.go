@@ -7,13 +7,6 @@ import (
 	"os"
 )
 
-// Data, this dear buddy hold the data we get from JSON
-type Data struct {
-	Name     string `json:"name"`
-	DialCode string `json:"dial_code"`
-	Code     string `json:"code"`
-}
-
 // LoadJSON data into msisdn struct so we can use it for search matchs later.
 func LoadJSON(filepath string, n *Msisdn) {
 
@@ -33,7 +26,7 @@ func LoadJSON(filepath string, n *Msisdn) {
 	content, err := ioutil.ReadAll(file)
 
 	// to conclude we take all this content and unmarchal to a struct
-	if err := json.Unmarshal(content, &n.data); err != nil {
+	if err := json.Unmarshal(content, &n.countryData); err != nil {
 		log.Fatal(err)
 	}
 }

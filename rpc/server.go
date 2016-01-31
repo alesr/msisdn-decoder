@@ -12,7 +12,7 @@ import (
 // Server tpc for our buddies
 func Server(n *msisdn.Msisdn) {
 
-	// here our address
+	// here's our address
 	addr := "0.0.0.0:80"
 
 	// honestly, never happened to understand what resolve address means
@@ -31,7 +31,7 @@ func Server(n *msisdn.Msisdn) {
 
 	fmt.Print("\n\n*** RPC server up and running... (ctrl-c to exit) ***\n")
 
-	// make our body visible to the client
+	// make our buddy visible to the client
 	rpc.Register(n)
 
 	// do you accept everything you listen?

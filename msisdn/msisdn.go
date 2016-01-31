@@ -18,8 +18,15 @@ var (
 // the data to look for the answer and
 // all the methods to convert one thing into other
 type Msisdn struct {
-	input string
-	data  []Data
+	input       string
+	countryData []country
+}
+
+// Data, this dear buddy hold the data we get from JSON
+type country struct {
+	Name     string `json:"name"`
+	DialCode string `json:"dial_code"`
+	Code     string `json:"code"`
 }
 
 // Decode is our guy. Our contact with the client.
@@ -71,24 +78,24 @@ func (n *Msisdn) sanitize(s string) error {
 	return nil
 }
 
-func (n *Msisdn) countryCode() ([]countryData, error) {
+func (n *Msisdn) countryCode() ([]country, error) {
 
 	// hold all matchs for that msisdn
-	cc := []countryData{}
+	countries := []country{}
 
 	// for each country in the whole world
 	// if dial code is equal to the slice with same length
 	// of the input data. then, we have a fellow cc.
-	for _, country := range n.data {
-		if country.DialCode == n.input[:len(country.DialCode)] {
-			cd := countryData{country.Name, country.Code, country.DialCode}
-			cc = append(cc, cd)
+	for _, c := range n.countryData {
+		if c.DialCode == n.input[:len(c.DialCode)] {
+			match := country{c.Name, c.Code, c.DialCode}
+			countries = append(countries, match)
 		}
 	}
 
 	// if empty slice, there's no match for this msisdn
-	if len(cc) == 0 {
+	if len(countries) == 0 {
 		return nil, ErrCodeCountryError
 	}
-	return cc, nil
+	return countries, nil
 }
