@@ -1,13 +1,19 @@
 [{
-	"1": ["Ljubljana"]
+	"code": "1",
+	"locality": ["Ljubljana"]
 }, {
-	"2": ["Maribor", "Ravne na Koroskem", "Murska Sobota"]
+	"code": "2",
+	"locality": ["Maribor", "Ravne na Koroskem", "Murska Sobota"]
 }, {
-	"3": ["Celje", "Trbovlje"]
+	"code": "3",
+	"locality": ["Celje", "Trbovlje"]
 }, {
-	"4": ["Kranj"]
+	"code": "4",
+	"locality": ["Kranj"]
 }, {
-	"5": ["Nova Gorica", "Koper", "Postojna"]
+	"code": "5",
+	"locality": ["Nova Gorica", "Koper", "Postojna"]
 }, {
-	"7": ["Novo mesto", "Krsko"]
+	"code": "7",
+	"locality": ["Novo mesto", "Krsko"]
 }]
