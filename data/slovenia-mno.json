@@ -1,13 +1,13 @@
 [{
-	"code": "SI.MOBIL d.d.",
-	"locality": ["30", "40"]
+	"mno": "SI.MOBIL d.d.",
+	"code": ["30", "40", "68"]
 }, {
-	"code": "MOBITEL d.d.",
-	"locality": ["71", "51", "41", "31"]
+	"mno": "Telekom Slovenije",
+	"code": ["71", "51", "41", "31"]
 }, {
-	"code": "T-2",
-	"locality": ["641", "642", "643", "644", "645"]
+	"mno": "T-2",
+	"code": ["64"]
 }, {
-	"code": "Tušmobil",
-	"locality": ["70"]
+	"mno": "Telemach",
+	"code": ["70"]
 }]
