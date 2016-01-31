@@ -1,9 +1,7 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/alesr/msisdn-decoder/msisdn"
@@ -11,19 +9,11 @@ import (
 )
 
 func main() {
+
 	n := new(msisdn.Msisdn)
 
-	// load and unmarharl json country code in a new goroutine
-	go func(n *msisdn.Msisdn) {
-		b, err := msisdn.LoadFile("data/country-code.json")
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		if err := json.Unmarshal(b, &n.CountryData); err != nil {
-			log.Fatal(err)
-		}
-	}(n)
+	// load the all the data we gonna need
+	go msisdn.LoadData(n)
 
 	// starts server
 	go rpc.Server(n)
