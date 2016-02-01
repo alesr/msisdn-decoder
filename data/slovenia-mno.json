@@ -1,13 +1,13 @@
 [{
-	"mno": "SI.MOBIL d.d.",
+	"operator": "SI.MOBIL d.d.",
 	"code": ["30", "40", "68"]
 }, {
-	"mno": "Telekom Slovenije",
+	"operator": "Telekom Slovenije",
 	"code": ["71", "51", "41", "31"]
 }, {
-	"mno": "T-2",
+	"operator": "T-2",
 	"code": ["64"]
 }, {
-	"mno": "Telemach",
+	"operator": "Telemach",
 	"code": ["70"]
 }]
