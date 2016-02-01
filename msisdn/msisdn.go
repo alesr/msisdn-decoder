@@ -18,6 +18,7 @@ var (
 	ErrCodeCountryError = errors.New("sorry, didn't find any code country for this msisdn")
 	ErrNotSInumberError = errors.New("the number provided is not a valid slovenian msisdn: wrong length")
 	ErrUnknownNDCError  = errors.New("the number provided is not a valid slovenian msisdn: unknown ndc")
+	ErrUnknownMNOError  = errors.New("the number provided is not a valid slovenian msisdn: unknown mno")
 )
 
 // Msisdn is kinda a Oracle that knows everything
@@ -26,13 +27,13 @@ var (
 // all the methods to convert one thing into other
 type Msisdn struct {
 	input       string
-	CountryData []country
+	CountryData []cc
 	NdcData     []ndc
 	MnoData     []mno
 }
 
 // this dear buddy hold the country data we get from JSON
-type country struct {
+type cc struct {
 	Name     string `json:"name"`
 	Code     string `json:"code"`
 	DialCode string `json:"dial_code"`
@@ -44,8 +45,8 @@ type ndc struct {
 }
 
 type mno struct {
-	Operator string `json:"operator"`
-	Code     string `json:"code"`
+	Operator string   `json:"operator"`
+	Code     []string `json:"code"`
 }
 
 // Decode is our guy. Our contact with the client.
@@ -64,6 +65,8 @@ func (n *Msisdn) Decode(s string, reply *Response) error {
 		return err
 	}
 
+	reply.CC = cc
+
 	// Due to our restriction on data. We will only consider NDC, MNO and SN for Slovenia.
 	if cc[0].Name == "Slovenia" {
 
@@ -79,12 +82,11 @@ func (n *Msisdn) Decode(s string, reply *Response) error {
 			return err
 		}
 
+		// get NDC
 		ndcCode, ndcLocality, err := n.nationalDestCode()
 		if err != nil {
 			return err
 		}
-
-		fmt.Println(ndcCode, ndcLocality)
 
 		reply.NDC.Code = ndcCode
 		reply.NDC.Locality = ndcLocality
@@ -92,11 +94,12 @@ func (n *Msisdn) Decode(s string, reply *Response) error {
 		// keep removing elements from the msisdn
 		n.input = strings.TrimPrefix(n.input, ndcCode)
 
-		n.mobileNetworkOp()
+		// get MNO
+		mnoOp, mnoCode, err := n.mobileNetworkOp()
+
+		reply.MNO.Operator = mnoOp
+		reply.MNO.Code = mnoCode
 	}
-
-	reply.CC = cc
-
 	return nil
 }
 
@@ -129,17 +132,17 @@ func (n *Msisdn) sanitize(s string) error {
 	return nil
 }
 
-func (n *Msisdn) countryCode() ([]country, error) {
+func (n *Msisdn) countryCode() ([]cc, error) {
 
 	// hold all matchs for that msisdn
-	countries := []country{}
+	countries := []cc{}
 
 	// for each country in the whole world
 	// if dial code is equal to the slice with same length
 	// of the input data. then, we have a fellow cc.
 	for _, c := range n.CountryData {
 		if c.DialCode == n.input[:len(c.DialCode)] {
-			match := country{c.Name, c.Code, c.DialCode}
+			match := cc{c.Name, c.Code, c.DialCode}
 			countries = append(countries, match)
 		}
 	}
@@ -172,8 +175,24 @@ func (n *Msisdn) nationalDestCode() (string, []string, error) {
 	return ndcCode[0], ndcLocality[0], nil
 }
 
-func (n *Msisdn) mobileNetworkOp() {
+func (n *Msisdn) mobileNetworkOp() (string, []string, error) {
 
+	var mnoOp string
+	var mnoCode []string
+
+	for _, data := range n.MnoData {
+		for _, code := range data.Code {
+			if code == n.input[:len(code)] {
+				mnoOp = data.Operator
+				mnoCode = append(mnoCode, code)
+			}
+		}
+	}
+
+	if len(mnoOp) == 0 {
+		return "", nil, ErrUnknownMNOError
+	}
+	return mnoOp, mnoCode, nil
 }
 
 func isValidSInumber(input *string, cc string) (bool, error) {
@@ -213,7 +232,8 @@ func LoadData(n *Msisdn) {
 		log.Fatal(err)
 	}
 
-	if err := json.Unmarshal(mnoJSON, &n.NdcData); err != nil {
+	if err := json.Unmarshal(mnoJSON, &n.MnoData); err != nil {
+		fmt.Println("uhaeh")
 		log.Fatal(err)
 	}
 }
