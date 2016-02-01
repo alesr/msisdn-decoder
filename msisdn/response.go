@@ -6,7 +6,7 @@ import "fmt"
 type Response struct {
 	CC  []country // worth to say that some countries share the same CC (eg.: USA and Canada)
 	NDC ndc
-	MNO string
+	MNO mno
 }
 
 // just formats the answer in a readable way

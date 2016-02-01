@@ -28,6 +28,7 @@ type Msisdn struct {
 	input       string
 	CountryData []country
 	NdcData     []ndc
+	MnoData     []mno
 }
 
 // this dear buddy hold the country data we get from JSON
@@ -40,6 +41,11 @@ type country struct {
 type ndc struct {
 	Code     string   `json:"code"`
 	Locality []string `json:"locality"`
+}
+
+type mno struct {
+	Operator string `json:"operator"`
+	Code     string `json:"code"`
 }
 
 // Decode is our guy. Our contact with the client.
@@ -61,6 +67,13 @@ func (n *Msisdn) Decode(s string, reply *Response) error {
 	// Due to our restriction on data. We will only consider NDC, MNO and SN for Slovenia.
 	if cc[0].Name == "Slovenia" {
 
+		// Before start look for a NDC, MNO and SN.
+		// Let's check if the input is a valid Slovenian number
+		// or just some weird number starting with 386.
+		// For that, we need to get rid of the CC and the potential zero following it.
+		// After that, we see how many digits we have are left.
+		// We need to count eight digits (NDC + (MNO + SN)) - initial 0.
+		// Thanks Wikipedia. I hope you're right.
 		_, err := isValidSInumber(&n.input, cc[0].DialCode)
 		if err != nil {
 			return err
@@ -75,7 +88,11 @@ func (n *Msisdn) Decode(s string, reply *Response) error {
 
 		reply.NDC.Code = ndcCode
 		reply.NDC.Locality = ndcLocality
-		// n.mobileNetworkOp()
+
+		// keep removing elements from the msisdn
+		n.input = strings.TrimPrefix(n.input, ndcCode)
+
+		n.mobileNetworkOp()
 	}
 
 	reply.CC = cc
@@ -139,6 +156,8 @@ func (n *Msisdn) nationalDestCode() (string, []string, error) {
 	var ndcCode []string
 	var ndcLocality [][]string
 
+	// for each zone in JSON we compare the zone value to
+	// the slice[:len(zone value)] on input
 	for _, zone := range n.NdcData {
 		if zone.Code == n.input[:len(zone.Code)] {
 			ndcCode = append(ndcCode, zone.Code)
@@ -146,19 +165,17 @@ func (n *Msisdn) nationalDestCode() (string, []string, error) {
 		}
 	}
 
+	// no match found. so, probably this is not a valid SI number
 	if len(ndcCode) == 0 {
 		return "", nil, ErrUnknownNDCError
 	}
 	return ndcCode[0], ndcLocality[0], nil
 }
 
-// Before start look for a NDC, MNO and SN.
-// Let's check if the input is a valid Slovenian number
-// or just some weird number starting with 386.
-// For that, we need to get rid of the CC and the potential zero following it.
-// After that, we see how many digits we have are left.
-// We need to count eight digits (NDC + (MNO + SN)) - initial 0.
-// Thanks Wikipedia. I hope you're right.
+func (n *Msisdn) mobileNetworkOp() {
+
+}
+
 func isValidSInumber(input *string, cc string) (bool, error) {
 	*input = strings.TrimPrefix(*input, cc)
 
@@ -188,6 +205,15 @@ func LoadData(n *Msisdn) {
 	}
 
 	if err := json.Unmarshal(ndcJSON, &n.NdcData); err != nil {
+		log.Fatal(err)
+	}
+
+	mnoJSON, err := handleFile("data/slovenia-mno.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err := json.Unmarshal(mnoJSON, &n.NdcData); err != nil {
 		log.Fatal(err)
 	}
 }
