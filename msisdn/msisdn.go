@@ -89,11 +89,16 @@ func (n *Msisdn) Decode(s string, reply *Response) error {
 		// keep removing elements from the msisdn
 		n.input = strings.TrimPrefix(n.input, ndcCode)
 
+		// MSISDN = CC + NDC + SN
+		// SN = MSISDN - CC - NDC
+		reply.SN = n.input
+
 		// get MNO
 		mnoOp, mnoCode, err := n.mobileNetworkOp()
 
 		reply.MNO.Operator = mnoOp
 		reply.MNO.Code = mnoCode
+		return nil
 	}
 	return nil
 }
