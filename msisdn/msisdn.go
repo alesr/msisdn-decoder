@@ -11,12 +11,13 @@ import (
 	"strings"
 )
 
-// really good practice to list all package errors here
+// good practice to list all package errors here
 // ErrSanitizeError - when user type something nonsense that's what we say
 var (
 	ErrSanitizeError    = errors.New("only of digits and optional prefixes (+, 00), 8-15 characters")
 	ErrCodeCountryError = errors.New("sorry, didn't find any code country for this msisdn")
-	ErrNotSInumberError = errors.New("the number provided is not a valid slovenian msisdn")
+	ErrNotSInumberError = errors.New("the number provided is not a valid slovenian msisdn: wrong length")
+	ErrUnknownNDCError  = errors.New("the number provided is not a valid slovenian msisdn: unknown ndc")
 )
 
 // Msisdn is kinda a Oracle that knows everything
@@ -43,7 +44,7 @@ type ndc struct {
 
 // Decode is our guy. Our contact with the client.
 // he's responsible to get the question, call some tough guys to work on it
-// and put the answer on paper.
+// and put the answer on the paper.
 func (n *Msisdn) Decode(s string, reply *Response) error {
 
 	// let's take the user input to quarantine
@@ -51,20 +52,29 @@ func (n *Msisdn) Decode(s string, reply *Response) error {
 		return err
 	}
 
+	// get CC
 	cc, err := n.countryCode()
 	if err != nil {
 		return err
 	}
 
-	// Due to our restriction on the data. We will only consider NDC, MNO and SN for Slovenia.
+	// Due to our restriction on data. We will only consider NDC, MNO and SN for Slovenia.
 	if cc[0].Name == "Slovenia" {
 
-		b, err := isValidSInumber(&n.input, cc[0].DialCode)
+		_, err := isValidSInumber(&n.input, cc[0].DialCode)
 		if err != nil {
 			return err
 		}
 
-		// n.nationalDestCode()
+		ndcCode, ndcLocality, err := n.nationalDestCode()
+		if err != nil {
+			return err
+		}
+
+		fmt.Println(ndcCode, ndcLocality)
+
+		reply.NDC.Code = ndcCode
+		reply.NDC.Locality = ndcLocality
 		// n.mobileNetworkOp()
 	}
 
@@ -124,8 +134,22 @@ func (n *Msisdn) countryCode() ([]country, error) {
 	return countries, nil
 }
 
-func (n *Msisdn) nationalDestCode() {
+func (n *Msisdn) nationalDestCode() (string, []string, error) {
 
+	var ndcCode []string
+	var ndcLocality [][]string
+
+	for _, zone := range n.NdcData {
+		if zone.Code == n.input[:len(zone.Code)] {
+			ndcCode = append(ndcCode, zone.Code)
+			ndcLocality = append(ndcLocality, zone.Locality)
+		}
+	}
+
+	if len(ndcCode) == 0 {
+		return "", nil, ErrUnknownNDCError
+	}
+	return ndcCode[0], ndcLocality[0], nil
 }
 
 // Before start look for a NDC, MNO and SN.
@@ -144,14 +168,11 @@ func isValidSInumber(input *string, cc string) (bool, error) {
 	if len(*input) != 8 {
 		return false, ErrNotSInumberError
 	}
-	fmt.Print(*input)
 	return true, nil
 }
 
 // LoadData guess what. Loads data from JSON files into msisdn structs
 func LoadData(n *Msisdn) {
-
-	// load and unmarharl json country code in a new goroutine
 	countryJSON, err := handleFile("data/country-code.json")
 	if err != nil {
 		log.Fatal(err)
@@ -169,7 +190,6 @@ func LoadData(n *Msisdn) {
 	if err := json.Unmarshal(ndcJSON, &n.NdcData); err != nil {
 		log.Fatal(err)
 	}
-
 }
 
 // handleFile checks if file exists, open and load it
@@ -192,7 +212,6 @@ func handleFile(filepath string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	return content, err
 }
 
