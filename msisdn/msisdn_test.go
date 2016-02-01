@@ -74,7 +74,21 @@ var countryCodeCases = []struct {
 	},
 }
 
-// TESTS
+var decoderCases = []struct {
+	input, expectedCC, expectedNDC, expectedMNO, expectedSN string
+	expectedErr                                             error
+}{
+	{"386016400500", "SI", "1", "T-2", "6400500", nil},
+	{"386024000411", "SI", "2", "SI.MOBIL d.d.", "4000411", nil},
+	{"386037111500", "SI", "3", "Telekom Slovenije", "7111500", nil},
+	{"386047000375", "SI", "4", "Telemach", "7000375", nil},
+	{"386056800497", "SI", "5", "SI.MOBIL d.d.", "6800497", nil},
+	{"386076400500", "SI", "7", "T-2", "6400500", nil},
+	{"351962348810", "PT", "", "", "", nil},
+	{"551962348810", "BR", "", "", "", nil},
+	{"672962348810", "AQ", "", "", "", nil},
+}
+
 func TestSanitize(t *testing.T) {
 	n := new(Msisdn)
 	for _, test := range sanitizeCases {
@@ -88,10 +102,16 @@ func TestSanitize(t *testing.T) {
 
 func TestCountryCode(t *testing.T) {
 
+	coutryDataFile = "../data/country-code.json"
+	ndcDataFile = "../data/slovenia-ndc.json"
+	mnoDataFile = "../data/slovenia-mno.json"
+
+	// possible formatting directive in Sprint call go vet will call
+	//but keep calm and test
 	errorMsg := fmt.Sprint("For input: %s, expected %s. Got %s")
 
 	n := new(Msisdn)
-	LoadJSON("../data/country-code.json", n)
+	LoadData(n)
 
 	for _, test := range countryCodeCases {
 		n.input = test.input
@@ -111,6 +131,32 @@ func TestCountryCode(t *testing.T) {
 			if obs.DialCode != test.dialCode[i] {
 				t.Errorf(errorMsg, n.input, test.dialCode[i], obs.DialCode)
 			}
+		}
+	}
+}
+
+// Partial test. Does not test CC w/ many areas and errors
+func TestDecoder(t *testing.T) {
+	errMsgFmt := fmt.Sprint("in: %s. expected: %s. got: %s")
+	n := new(Msisdn)
+
+	LoadData(n)
+	for _, test := range decoderCases {
+		r := new(Response)
+		err := n.Decode(test.input, r)
+		if err != nil {
+			t.Error(err)
+		}
+
+		switch {
+		case r.CC[0].Code != test.expectedCC:
+			t.Errorf(errMsgFmt, test.input, test.expectedCC, r.CC[0].Code)
+		case r.NDC.Code != test.expectedNDC:
+			t.Errorf(errMsgFmt, test.input, test.expectedNDC, r.NDC.Code)
+		case r.MNO.Operator != test.expectedMNO:
+			t.Errorf(errMsgFmt, test.input, test.expectedMNO, r.MNO.Operator)
+		case r.SN != test.expectedSN:
+			t.Errorf(errMsgFmt, test.input, test.expectedSN, r.SN)
 		}
 	}
 }
