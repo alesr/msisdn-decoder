@@ -1,0 +1,19 @@
+[{
+	"code": "1",
+	"locality": ["Ljubljana"]
+}, {
+	"code": "2",
+	"locality": ["Maribor", "Ravne na Koroskem", "Murska Sobota"]
+}, {
+	"code": "3",
+	"locality": ["Celje", "Trbovlje"]
+}, {
+	"code": "4",
+	"locality": ["Kranj"]
+}, {
+	"code": "5",
+	"locality": ["Nova Gorica", "Koper", "Postojna"]
+}, {
+	"code": "7",
+	"locality": ["Novo mesto", "Krsko"]
+}]

@@ -1,0 +1,13 @@
+[{
+	"operator": "SI.MOBIL d.d.",
+	"code": ["30", "40", "68"]
+}, {
+	"operator": "Telekom Slovenije",
+	"code": ["71", "51", "41", "31"]
+}, {
+	"operator": "T-2",
+	"code": ["64"]
+}, {
+	"operator": "Telemach",
+	"code": ["70"]
+}]

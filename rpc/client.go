@@ -9,7 +9,8 @@ import (
 	"github.com/alesr/msisdn-decoder/msisdn"
 )
 
-// Client - Here we deal with the connection to the server to ask him some serious stuff...
+// Client - Here we deal with the connection client connection to the Server
+// ask for input, outpur errors and good news
 func Client() {
 
 	// "hey i just met you. and this is crazy, but here's my number. so call me maybe?"
@@ -54,23 +55,28 @@ func getRequest(c *rpc.Client) {
 			fmt.Println(err)
 		case msisdn.ErrCodeCountryError.Error():
 			fmt.Println(err)
+		case msisdn.ErrNotSInumberError.Error():
+			fmt.Println(err)
+		case msisdn.ErrUnknownNDCError.Error():
+			fmt.Println(err)
+		case msisdn.ErrUnknownMNOError.Error():
+			fmt.Println(err)
 		default:
 			log.Fatal(err)
 		}
 
-		// we ask request again... (but what now?).
+		// come back to user and wait for another request
 		getRequest(c)
 	}
 
 	// let's  announce the good news to user
 	fmt.Printf("%s\n", reply.String())
-	getRequest(c) // and ask again... shiiii..
+	getRequest(c) // and ask again...
 }
 
 // askInput - interacts with the user asking a msisdn number
 func askInput(c *rpc.Client) (string, error) {
 
-	// input will hold... well, the input
 	var input string
 	fmt.Print("msisdn: ")
 	// this thing you typed, give to me
@@ -79,13 +85,12 @@ func askInput(c *rpc.Client) (string, error) {
 		return "", err
 	}
 
-	// too tired to explain
 	switch input {
 	case "exit":
-		fmt.Println("\n*** exiting client ***")
+		fmt.Println("\n*** exit ***")
 		os.Exit(0)
 	case "help":
-		fmt.Println("enter a MSISDN composed only of digits and optional prefixes (+, 00), 8-15 characters")
+		fmt.Println("enter a MSISDN composed only by digits and optional prefixes (+, 00), 8-15 characters")
 		getRequest(c)
 	}
 	return input, nil

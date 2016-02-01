@@ -8,16 +8,14 @@ import (
 	"github.com/alesr/msisdn-decoder/rpc"
 )
 
-// the pot under the rainbow for code country and other data
-const countryCodeFilepath string = "data/country-code.json"
-
 func main() {
+
 	n := new(msisdn.Msisdn)
 
-	// go load that data for me. gonna use it soon
-	go msisdn.LoadJSON(countryCodeFilepath, n)
+	// load the all the data we gonna need
+	go msisdn.LoadData(n)
 
-	// hey server! follow that taxi! kidding, just start
+	// starts server
 	go rpc.Server(n)
 
 	// play: drum-roll-sound-effect.midi
@@ -25,6 +23,6 @@ func main() {
 	fmt.Printf("\n*** lauching client... ***\n\n")
 	time.Sleep(1 * time.Second)
 
-	// starts the client
+	// starts client
 	rpc.Client()
 }
