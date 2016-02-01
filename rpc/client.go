@@ -70,7 +70,7 @@ func getRequest(c *rpc.Client) {
 	}
 
 	// let's  announce the good news to user
-	fmt.Printf("%s\n", reply.String())
+	reply.String()
 	getRequest(c) // and ask again...
 }
 
