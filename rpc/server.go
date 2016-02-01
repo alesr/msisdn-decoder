@@ -21,18 +21,16 @@ func Server(n *msisdn.Msisdn) {
 		log.Fatal(err)
 	}
 
+	// listen for requests
 	l, err := net.ListenTCP("tcp", rAddr)
 	if err != nil {
 		log.Fatal(err)
 	}
-	// please, close the door before you leave.
 	defer l.Close()
 
 	fmt.Print("\n\n*** RPC server up and running... (ctrl-c to exit) ***\n")
 
 	// make our buddy visible
 	rpc.Register(n)
-
-	// do you accept everything you listen?
 	rpc.Accept(l)
 }

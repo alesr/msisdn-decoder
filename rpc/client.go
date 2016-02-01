@@ -49,7 +49,7 @@ func getRequest(c *rpc.Client) {
 		// Here, the err is returned by decoder method VIA Server.
 		// Because of that, the error is of type rpc.ServerError (or something like that)
 		// Said that, we need to compare the VALUE of this error to the string
-		// representation of our error. I S2 Go Interfaces!
+		// representation of our error.
 		switch err.Error() {
 		case msisdn.ErrSanitizeError.Error():
 			fmt.Println(err)
