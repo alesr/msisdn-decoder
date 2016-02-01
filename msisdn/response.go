@@ -7,20 +7,34 @@ type Response struct {
 	CC  []cc // worth to say that some countries share the same CC (eg.: USA and Canada)
 	NDC ndc
 	MNO mno
+	SN  string
 }
 
 // just formats the answer in a readable way
 // Implements Stringer interface o/
-func (r *Response) String() string {
+func (r *Response) String() {
 
 	// we can have multiples results for the same dial code
 	// in such case we add this info to countryInfo
-	countryInfo := []string{}
-	for _, cc := range r.CC {
-		data := fmt.Sprintf("\n    name: %s\n    code: %s\n    dial code: %s\n", cc.Name, cc.Code, cc.DialCode)
-		countryInfo = append(countryInfo, data)
+	fmt.Println("\nDial code: ", r.CC[0].DialCode)
+	for _, country := range r.CC {
+		fmt.Printf("  %s - %s\n", country.Name, country.Code)
 	}
 
-	return fmt.Sprintf("\ncountry info: \n%s\n\nNDC: %s\nMNO: %s\n",
-		countryInfo, r.NDC, r.MNO)
+	if len(r.NDC.Code) != 0 {
+		fmt.Println("\nNDC: ", r.NDC.Code)
+		for _, locality := range r.NDC.Locality {
+			fmt.Println("  ", locality)
+		}
+	}
+
+	if len(r.MNO.Code) != 0 {
+		fmt.Println("\nMNO: ", r.MNO.Code[0])
+		fmt.Println("  ", r.MNO.Operator)
+	}
+
+	if len(r.SN) != 0 {
+		fmt.Println("\nSN: ", r.SN)
+	}
+	fmt.Println()
 }
