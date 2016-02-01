@@ -59,6 +59,8 @@ func getRequest(c *rpc.Client) {
 			fmt.Println(err)
 		case msisdn.ErrUnknownNDCError.Error():
 			fmt.Println(err)
+		case msisdn.ErrUnknownMNOError.Error():
+			fmt.Println(err)
 		default:
 			log.Fatal(err)
 		}
