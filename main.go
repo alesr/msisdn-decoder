@@ -20,7 +20,7 @@ func main() {
 
 	// play: drum-roll-sound-effect.midi
 	time.Sleep(1 * time.Second)
-	fmt.Printf("\n*** lauching client... ***\n\n")
+	fmt.Printf("\n*** launching client ***\n\n")
 	time.Sleep(1 * time.Second)
 
 	// starts client
