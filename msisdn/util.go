@@ -8,9 +8,15 @@ import (
 	"os"
 )
 
+var (
+	coutryDataFile = "data/country-code.json"
+	ndcDataFile    = "data/slovenia-ndc.json"
+	mnoDataFile    = "data/slovenia-mno.json"
+)
+
 // LoadData guess what. Loads data from JSON files into msisdn structs
 func LoadData(n *Msisdn) {
-	countryJSON, err := handleFile("data/country-code.json")
+	countryJSON, err := handleFile(coutryDataFile)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -19,7 +25,7 @@ func LoadData(n *Msisdn) {
 		log.Fatal(err)
 	}
 
-	ndcJSON, err := handleFile("data/slovenia-ndc.json")
+	ndcJSON, err := handleFile(ndcDataFile)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -28,7 +34,7 @@ func LoadData(n *Msisdn) {
 		log.Fatal(err)
 	}
 
-	mnoJSON, err := handleFile("data/slovenia-mno.json")
+	mnoJSON, err := handleFile(mnoDataFile)
 	if err != nil {
 		log.Fatal(err)
 	}

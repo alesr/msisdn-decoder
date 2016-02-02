@@ -7,7 +7,6 @@ import (
 )
 
 // good practice to list all package errors here
-// ErrSanitizeError - when user type something nonsense that's what we say
 var (
 	ErrSanitizeError    = errors.New("only of digits and optional prefixes (+, 00), 8-15 characters")
 	ErrCodeCountryError = errors.New("sorry, didn't find any code country for this msisdn")
@@ -27,7 +26,6 @@ type Msisdn struct {
 	MnoData     []mno
 }
 
-// this dear buddy hold the country data we get from JSON
 type cc struct {
 	Name     string `json:"name"`
 	Code     string `json:"code"`
@@ -59,7 +57,6 @@ func (n *Msisdn) Decode(s string, reply *Response) error {
 	if err != nil {
 		return err
 	}
-
 	reply.CC = cc
 
 	// Due to our restriction on data. We will only consider NDC, MNO and SN for Slovenia.
@@ -82,18 +79,22 @@ func (n *Msisdn) Decode(s string, reply *Response) error {
 		if err != nil {
 			return err
 		}
-
 		reply.NDC.Code = ndcCode
 		reply.NDC.Locality = ndcLocality
 
 		// keep removing elements from the msisdn
 		n.input = strings.TrimPrefix(n.input, ndcCode)
 
+		// MSISDN = CC + NDC + SN
+		// SN = MSISDN - CC - NDC
+		reply.SN = n.input
+
 		// get MNO
 		mnoOp, mnoCode, err := n.mobileNetworkOp()
-
 		reply.MNO.Operator = mnoOp
 		reply.MNO.Code = mnoCode
+
+		return nil
 	}
 	return nil
 }
@@ -133,7 +134,7 @@ func (n *Msisdn) countryCode() ([]cc, error) {
 	countries := []cc{}
 
 	// for each country in the whole world
-	// if dial code is equal to the slice with same length
+	// if dial code is equal to the slice with same length (starting at index 0)
 	// of the input data. then, we have a fellow cc.
 	for _, c := range n.CountryData {
 		if c.DialCode == n.input[:len(c.DialCode)] {
@@ -163,7 +164,7 @@ func (n *Msisdn) nationalDestCode() (string, []string, error) {
 		}
 	}
 
-	// no match found. so, probably this is not a valid SI number
+	// no match found. so, this is not a valid SI number
 	if len(ndcCode) == 0 {
 		return "", nil, ErrUnknownNDCError
 	}
@@ -175,6 +176,7 @@ func (n *Msisdn) mobileNetworkOp() (string, []string, error) {
 	var mnoOp string
 	var mnoCode []string
 
+	// more or less the same thing above but nested loops
 	for _, data := range n.MnoData {
 		for _, code := range data.Code {
 			if code == n.input[:len(code)] {
@@ -183,7 +185,7 @@ func (n *Msisdn) mobileNetworkOp() (string, []string, error) {
 			}
 		}
 	}
-
+	// if no MNO were found...
 	if len(mnoOp) == 0 {
 		return "", nil, ErrUnknownMNOError
 	}
@@ -194,8 +196,15 @@ func (n *Msisdn) isValidSInumber(cc string) (bool, error) {
 	n.input = strings.TrimPrefix(n.input, cc)
 
 	// remove dispensable digit zero before area code
+	// see! that's only* for slovenia! how do you guys do that?
+	// i've read something about this zero be optional or not necessary when
+	// you make phone call to the same area...
 	n.input = strings.TrimPrefix(n.input, "0")
 
+	// I know that the maximum length for any MSISDN is 15
+	// but what is the minimum SN in slovenia? and other countries?
+	// I assume 8 for slovenia with help of wikipedia
+	// but wikipedia SHOULDN'T be used as documentation for writing software!
 	if len(n.input) != 8 {
 		return false, ErrNotSInumberError
 	}
