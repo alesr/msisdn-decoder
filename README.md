@@ -1,5 +1,6 @@
-### how to run it
+![msisdn-decoder](https://github.com/alesr/msisdn-decoder/blob/master/msisdn-decoder.gif)
 
+### how to run it
 
 If you have GO installed:
 ```
