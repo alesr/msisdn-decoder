@@ -8,6 +8,7 @@ import (
 	"net/rpc"
 	"os"
 	"runtime"
+	"strings"
 
 	"github.com/alesr/msisdn-decoder/msisdn"
 )
@@ -89,14 +90,8 @@ func askInput(c *rpc.Client) (string, error) {
 
 	// WINDOWS EOF rage.
 	if runtime.GOOS == "windows" {
-		// Remove newline delimiter
-		if input[len(input)-1] == '\n' {
-			input = input[:len(input)-1]
-		}
-		// Remove carriage return
-		if input[len(input)-1] == '\r' {
-			input = input[:len(input)-1]
-		}
+		input = strings.Replace(input, "\n", "", -1)
+		input = strings.Replace(input, "\r", "", -1)
 	}
 
 	switch input {
