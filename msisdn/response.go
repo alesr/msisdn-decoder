@@ -10,9 +10,8 @@ type Response struct {
 	SN  string
 }
 
-// just formats the answer in a readable way
-// Implements Stringer interface o/
-func (r *Response) String() {
+// format and print the answer in a readable way
+func (r *Response) PrintReply() {
 
 	// we can have multiples results for the same dial code
 	// in such case we add this info to countryInfo

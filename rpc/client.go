@@ -73,7 +73,7 @@ func getRequest(c *rpc.Client) {
 	}
 
 	// let's  announce the good news to user
-	reply.String()
+	reply.PrintReply()
 	getRequest(c) // and ask again...
 }
 
