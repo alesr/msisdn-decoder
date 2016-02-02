@@ -3,9 +3,11 @@ package rpc
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"log"
 	"net/rpc"
 	"os"
+	"runtime"
 
 	"github.com/alesr/msisdn-decoder/msisdn"
 )
@@ -81,13 +83,20 @@ func askInput(c *rpc.Client) (string, error) {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print("msisdn: ")
 	input, err := reader.ReadString('\n')
-	if err != nil {
+	if err != nil && err.Error() != io.EOF.Error() {
 		return "", err
 	}
 
-	// WINDOWS delimiter hate
-	if input[len(input)-1] == '\n' {
-		input = input[:len(input)-1]
+	// WINDOWS EOF rage.
+	if runtime.GOOS == "windows" {
+		// Remove newline delimiter
+		if input[len(input)-1] == '\n' {
+			input = input[:len(input)-1]
+		}
+		// Remove carriage return
+		if input[len(input)-1] == '\r' {
+			input = input[:len(input)-1]
+		}
 	}
 
 	switch input {
