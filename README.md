@@ -55,8 +55,11 @@ For each analysis if there is a corresponding error message. So that the user ca
 The program scope and implementation of the code, follow my superficial analysis of the MSISDN definition found on the following links:
 
 http://www.msisdn.org/
+
 https://en.wikipedia.org/wiki/MSISDN
+
 https://en.wikipedia.org/wiki/Telephone_numbers_in_Slovenia
+
 http://www.akos-rs.si/numbering-space
 
 Particularly to the scope of the program.
