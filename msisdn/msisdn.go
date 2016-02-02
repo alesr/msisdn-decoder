@@ -101,7 +101,6 @@ func (n *Msisdn) Decode(s string, reply *Response) error {
 
 // this guy is cleaning obsessed. believe me.
 func (n *Msisdn) sanitize(s string) error {
-
 	// if i knew regular expression well enough
 	// i would solve the whole story with our guy down there
 	// but at least we're working on pointers. so, no copies!

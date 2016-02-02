@@ -1,6 +1,7 @@
 package rpc
 
 import (
+	"bufio"
 	"fmt"
 	"log"
 	"net/rpc"
@@ -77,12 +78,16 @@ func getRequest(c *rpc.Client) {
 // askInput - interacts with the user asking a msisdn number
 func askInput(c *rpc.Client) (string, error) {
 
-	var input string
+	reader := bufio.NewReader(os.Stdin)
 	fmt.Print("msisdn: ")
-	// this thing you typed, give to me
-	_, err := fmt.Scan(&input)
+	input, err := reader.ReadString('\n')
 	if err != nil {
 		return "", err
+	}
+
+	// WINDOWS delimiter hate
+	if input[len(input)-1] == '\n' {
+		input = input[:len(input)-1]
 	}
 
 	switch input {
