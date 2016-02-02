@@ -84,16 +84,12 @@ func askInput(c *rpc.Client) (string, error) {
 	fmt.Print("msisdn: ")
 	input, err := reader.ReadString('\n')
 	if err != nil && err.Error() != io.EOF.Error() {
-		fmt.Println("test")
 		return "", err
 	}
 
 	// WINDOWS EOF rage.
 	input = strings.Replace(input, "\n", "", -1)
 	input = strings.Replace(input, "\r", "", -1)
-
-	fmt.Println(input)
-	fmt.Println(len(input))
 
 	switch input {
 	case "exit":
