@@ -16,38 +16,38 @@ docker run -it --rm --name msisdn alesr/msisdn-decoder
 
 ### how it works
 
-It's a simple MSISDN decoder using the Go net/rpc package to listen on a tcp address serving exposing a single method to the client.
+This is a simple MSISDN decoder using the Go net/rpc package to server on a tcp address and expose a single method API which can decode a MSISDN in some useful data.
 
-After the successful connection to the server on **127.0.0.1:80**, the client can
-then make requests to the server calling the only available method Decoder to
-pass a MSISDN string and receive a Response struct containing the result for that query.
+After the successful connection to the server running at **127.0.0.1:80**, the client can then make requests by calling the only available method Decoder, pass a MSISDN string and receive a Response struct containing the result for that query.
 
-The conversation happens on a simple I/O comunication where the user input provide an MSISDN number and receive your response via stdout.
+The conversation happens over a simple I/O comunication interface, where the user provide an MSISDN number on stdin and receive your response or errors via stdout and stderr.
 
 ### input
 
-For the input the user should type a valid MSISDN number composed by only digits, spaces, or optional the prefixes + and 00. The mininum length is 8 and the maximum 15.
+For the input, the user should type a valid MSISDN number composed by digits, spaces, or optional the prefixes + and 00. The mininum length is 8 and the maximum 15.
 
-By providing an invalid input, the user should receive helpfull error message corresponding to that particular issue via stder.
+By providing an invalid input, the user should receive helpful error message corresponding to that particular issue via stderr.
 
-Also, the user can interact with the program by typing **help** to get a hint and **exit** to leave the application.
+Also, the user can interact with the program by typing **help** to get a message hint and **exit** to close de connection and leave the application.
 
 ### output
 
 After a valid submission, the following behavior is expected:
 
-For any MSISDN number starting with a valid country dial code (CC) eg.: +55, 351, 0044. The program will match the corresponding country code in the ISO 3166-1-alpha-2 format, output the result and ask the user for a new MSISDN.
+For any MSISDN number starting with a valid country dial code (CC) eg.: +55, 351, 0044. The program will map the corresponding country code in the ISO 3166-1-alpha-2 format, output the result and ask the user for a new MSISDN.
 
 For Slovenian MSISDN an enhanced output is expected:
-After verify that the country code is from Slovenia, the program will look to the next numbers to get the National Destination Code (NDC) which if valid will point to the corresponding Slovenian region. Although this code has not been asked in the task. This step is important to separate the the CC from the Subscriber Number which follows the definition:
+After verify that the country code is from Slovenia, the program will look to the next numbers to get the National Destination Code (NDC), which if valid, will point to the corresponding Slovenian region for that code. Although the NDC has not been asked in the task. This step is important to separate the CC from the Subscriber Number (SN) by following the definition:
 
 **MSISDN = CC + NDC + SN**
 
-After find the NDC number, it is already possible to find the Subscriber Number (SN) which are the remaining digits after the NDC.
+After find the NDC number, it is already possible to determine the Subscriber Number (SN) which are the remaining digits after the NDC.
 
-The next step is to follow the previous principles used to find the CC and NDC to map the Mobile Network Operator (MNO). The MNO is expected to be found as the first 2 or 3 digits at the Subscriber number.
+The next step is to map the Mobile Network Operator (MNO). The MNO is expected to be found as the first 2 or 3 digits at the Subscriber number.
 
-For each analysis if there is a corresponding error message. So that the user can understand the reason for a failure.
+For each part of the analysis there is a corresponding error message. So the user can understand the reason of a failure.
+
+At the and of the proccess the result will be printed to the user console and the program will ask for a new MSISDN.
 
 ### considerations
 
@@ -63,12 +63,11 @@ https://en.wikipedia.org/wiki/Telephone_numbers_in_Slovenia
 http://www.akos-rs.si/numbering-space
 
 Particularly to the scope of the program.
-To get the the SN from the MSISDN, after find the CC is necessary to identify the NDC. And either to find the CC, the NDC and either to map the MNO names to their codes. It is only possible by using a database.
-
+After find the CC, to get the SN from the MSISDN, is necessary to identify the NDC. And either to find the CC, the NDC or to map the MNO names to their codes it is only possible by using a database. That is the reason to the enhanced behavior be restrict only for Slovenians MSISDN so far.
 
 [2]
-At main.go the server is called on its on goroutine being followed by the call
-to the client for the pure convenience of execute the program in the same terminal window.
+At main.go, the server is called on its own goroutine and followed by a call to the client function for the
+merely convenience of execute the program in the same terminal window. In any way the implementation of the server and client should be considered a single entity.
 
 [3]
-More about the implementation must be found in the code commentaries.   
+More about the implementation can be found in the code commentaries.
